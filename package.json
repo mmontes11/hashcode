@@ -1,0 +1,27 @@
+{
+  "name": "hashcode",
+  "version": "1.0.0",
+  "author": "Los Almendros",
+  "description": "Google hashcode code challenge by Los Almendros",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "cross-env": "^7.0.0"
+  },
+  "scripts": {
+    "clean": "rm out/*",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "start:inspect": "cross-env NODE_ENV=development node --inspect-brk index.js",
+    "start:profile": "cross-env NODE_ENV=production PROFILE=true node --inspect --prof index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmontes11/hashcode.git"
+  },
+  "keywords": [
+    "google hashcode",
+    "code challenge",
+    "node",
+    "javascript"
+  ]
+}
