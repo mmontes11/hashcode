@@ -43,7 +43,7 @@ const optimize = (libs, numDays, totalBooks) => {
   console.log("2")
 
   const maxFreq = Math.max(...libs.map(l => l.freq));
-  const maxBookVal = 0;//sMath.max(...totalBooks);
+  const maxBookVal = 1;//sMath.max(...totalBooks);
   const maxBookLength = Math.max(...libs.map(l => l.books.length));
   console.log("3")
 
