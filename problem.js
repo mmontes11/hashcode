@@ -35,38 +35,41 @@ const heuristicValue = l => {
   );
 };
 
-const optimize = (libs, numDays, acc = []) => {
-  if (libs.length === 0 || numDays <= 0) {
-    return acc;
-  }
-  libs = libs.map(l => ({
-    ...l,
-    books: l.books.slice(0, l.freq * numDays),
-  }));
+const optimize = (libs, numDays, totalBooks) => {
+  const result = [];
+  let currentDays = numDays;
   const maxSignUp = Math.max(...libs.map(l => l.signup));
   const maxFreq = Math.max(...libs.map(l => l.freq));
-  const bookValues = libs.reduce((acc, it) => [...acc, ...it.books.map(b => b.score)], []);
-  const maxBookVal = Math.max(...bookValues);
+  const maxBookVal = Math.max(...totalBooks);
   const maxBookLength = Math.max(...libs.map(l => l.books.length));
-  libs = libs.map(l => {
-    const newLib = {
+  while (libs.length > 0 && currentDays > 0) {
+    libs = libs.map(l => ({
       ...l,
-      normSignUp: l.signup / maxSignUp,
-      normFreq: l.freq / maxFreq,
-      normAvg: l.score.avg / maxBookVal,
-      normMedian: l.score.median / maxBookVal,
-      normLength: l.books.length / maxBookLength,
-    };
-    const heuristic = heuristicValue(newLib);
-    return {
-      ...newLib,
-      books: l.books.slice(0, l.freq * numDays),
-      heuristic,
-    };
-  });
-  libs = libs.sort((a, b) => a.heuristic - b.heuristic);
-  const [first, ...rest] = libs;
-  return optimize(rest, numDays - first.signup, [...acc, first]);
+      books: l.books.slice(0, l.freq * currentDays),
+    }));
+    libs = libs.map(l => {
+      const newLib = {
+        ...l,
+        normSignUp: l.signup / maxSignUp,
+        normFreq: l.freq / maxFreq,
+        normAvg: l.score.avg / maxBookVal,
+        normMedian: l.score.median / maxBookVal,
+        normLength: l.books.length / maxBookLength,
+      };
+      const heuristic = heuristicValue(newLib);
+      return {
+        ...newLib,
+        books: l.books.slice(0, l.freq * currentDays),
+        heuristic,
+      };
+    });
+    libs = libs.sort((a, b) => a.heuristic - b.heuristic);
+    const [first, ...rest] = libs;
+    libs = rest;
+    currentDays -= first.signup;
+    result.push(first);
+  }
+  return result;
 };
 
 const problem = (lines, ws) => {
@@ -97,7 +100,7 @@ const problem = (lines, ws) => {
     libs.sort((a, b) => b.score - a.score);
     indexLib++;
   }
-  libs = optimize(libs, numDays);
+  libs = optimize(libs, numDays, totalBooks);
   // console.log(`numLibs: ${numLibs}`);
   // console.log(`numDays: ${numDays}`);
   // console.log(`totalBooks: ${totalBooks}`);
