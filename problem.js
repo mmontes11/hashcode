@@ -35,15 +35,44 @@ const heuristicValue = l => {
   );
 };
 
+const max  = (list, key) =>{
+  let maxVal = 0;
+  for(let i=0; i<list.length; i++){
+    if(list[i][key] > maxVal ){
+      maxVal = list[i][key];
+    }
+  }
+  return maxVal;
+};
+
+const totalScore = (libs, numDays) => {
+  let score = 0;
+  let repeated = [];
+  let initDay =0;
+  libs.forEach(function(lib){
+        initDay += lib.signup;
+        for(let i=0;i<lib.books.length && i<lib.freq*(numDays - initDay);i++){
+          let book = lib.books[i];
+          if(repeated.indexOf(book.index) == -1){
+             score += book.score;
+             repeated.push(book.index);
+          }    
+        }
+  })
+  console.log(score);
+  return score;
+};
+
 const optimize = (libs, numDays, totalBooks) => {
   const result = [];
   console.log("1")
   let currentDays = numDays;
+
   const maxSignUp = Math.max(...libs.map(l => l.signup));
   console.log("2")
 
   const maxFreq = Math.max(...libs.map(l => l.freq));
-  const maxBookVal = 1;//sMath.max(...totalBooks);
+  const maxBookVal = 1;//Math.max(...totalBooks);
   const maxBookLength = Math.max(...libs.map(l => l.books.length));
   console.log("3")
 
@@ -101,7 +130,10 @@ const problem = (lines, ws) => {
   // console.log(`totalBooks: ${totalBooks}`);
   // console.log(`libs:`);
   console.log(JSON.stringify(libs, null, 2));
+
   printResult(libs, ws);
+
+  totalScore(libs, numDays)
 };
 
 module.exports = problem;
