@@ -37,32 +37,27 @@ const heuristicValue = l => {
 
 const optimize = (libs, numDays, totalBooks) => {
   const result = [];
+  console.log("1")
   let currentDays = numDays;
   const maxSignUp = Math.max(...libs.map(l => l.signup));
+  console.log("2")
+
   const maxFreq = Math.max(...libs.map(l => l.freq));
-  const maxBookVal = Math.max(...totalBooks);
+  const maxBookVal = 0;//sMath.max(...totalBooks);
   const maxBookLength = Math.max(...libs.map(l => l.books.length));
+  console.log("3")
+
   while (libs.length > 0 && currentDays > 0) {
-    libs = libs.map(l => ({
-      ...l,
-      books: l.books.slice(0, l.freq * currentDays),
-    }));
-    libs = libs.map(l => {
-      const newLib = {
-        ...l,
-        normSignUp: l.signup / maxSignUp,
-        normFreq: l.freq / maxFreq,
-        normAvg: l.score.avg / maxBookVal,
-        normMedian: l.score.median / maxBookVal,
-        normLength: l.books.length / maxBookLength,
-      };
-      const heuristic = heuristicValue(newLib);
-      return {
-        ...newLib,
-        books: l.books.slice(0, l.freq * currentDays),
-        heuristic,
-      };
-    });
+    console.log(libs.length)
+    for (let i = 0; i < libs.length; i++) {
+      libs[i].books.slice(0, libs[i].freq * currentDays)
+      libs[i].normSignUp = libs[i].signup / maxSignUp,
+      libs[i].normFreq = libs[i].freq / maxFreq;
+      libs[i].normAvg = libs[i].score.avg / maxBookVal;
+      libs[i].normMedian = libs[i].score.median / maxBookVal;
+      libs[i].normLength = libs[i].books.length / maxBookLength;
+      libs[i].heuristic = heuristicValue(libs[i]); 
+    }
     libs = libs.sort((a, b) => a.heuristic - b.heuristic);
     const [first, ...rest] = libs;
     libs = rest;
