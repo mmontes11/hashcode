@@ -2,7 +2,7 @@
 
 const readLine = require("readline");
 const fs = require("fs");
-const dataSet = process.argv.length > 3 ? process.argv[2] : undefined;
+const dataSet = process.argv.length >= 3 ? process.argv[2] : undefined;
 const profile = process.env.PROFILE;
 const intervalIds = [];
 const problem = require("./problem");
@@ -17,8 +17,11 @@ const main = dataSet => {
   const ws = fs.createWriteStream(`${__dirname}/out/${filename}.out`);
 
   lineReader.on("line", line => {
-    const numbers = line.split(" ").map(str => parseInt(str, 10));
-    lines.push(numbers);
+    let numbers = line.split(" ").map(str => parseInt(str, 10));
+    const isNan = numbers.some(x => Number.isNaN(x));
+    if (!isNan) {
+      lines.push(numbers);
+    }
   });
   lineReader.on("close", () => {
     if (profile) {
@@ -36,7 +39,7 @@ if (dataSet) {
   main(dataSet);
 } else {
   fs.readdirSync(`${__dirname}/in`)
-    .filter(file => file.endsWith(".in"))
+    .filter(file => file.endsWith(".txt"))
     .forEach(file => {
       main(file);
     });
